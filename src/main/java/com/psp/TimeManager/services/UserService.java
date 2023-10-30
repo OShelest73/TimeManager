@@ -1,7 +1,7 @@
 package com.psp.TimeManager.services;
 
-import PasswordConfig;
 import com.psp.TimeManager.dto.CredentialsDto;
+import com.psp.TimeManager.dto.SignUpDto;
 import com.psp.TimeManager.dto.UserDto;
 import com.psp.TimeManager.exceptions.AppException;
 import com.psp.TimeManager.exceptions.UserNotFoundException;
@@ -19,6 +19,7 @@ import javax.management.relation.Role;
 import java.nio.CharBuffer;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,8 +48,20 @@ public class UserService {
         throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
     }
 
-    private Collections<GrantedAuthority> mapRoleToAuthorities(List<Role> roles){
-        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getRoleName())).collect(Collectors.toList());
+    public UserDto register(SignUpDto signUpDto)
+    {
+        Optional<User> oUser = userRepository.findByLogin(signUpDto.login());
+
+        if(oUser.isPresent())
+        {
+            throw new AppException("Login already exists", HttpStatus.BAD_REQUEST);
+        }
+
+        User user = userMapper.signUpToUser(signUpDto);
+
+        user.setPassword(passwordEncoder.encode(CharBuffer.wrap(signUpDto.password())));
+        User savedUser = userRepository.save(user);
+        return userMapper.toUserDto(savedUser);
     }
 
     public User addUser(User user)
