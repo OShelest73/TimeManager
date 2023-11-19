@@ -1,4 +1,4 @@
-package com.psp.TimeManager.dto;
+package com.psp.TimeManager.dtos;
 
 import com.psp.TimeManager.models.Permission;
 import lombok.AllArgsConstructor;

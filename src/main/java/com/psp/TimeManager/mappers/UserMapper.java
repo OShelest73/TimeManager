@@ -1,7 +1,7 @@
 package com.psp.TimeManager.mappers;
 
-import com.psp.TimeManager.dto.SignUpDto;
-import com.psp.TimeManager.dto.UserDto;
+import com.psp.TimeManager.dtos.SignUpDto;
+import com.psp.TimeManager.dtos.UserDto;
 import com.psp.TimeManager.models.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

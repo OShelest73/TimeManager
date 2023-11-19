@@ -11,7 +11,7 @@ import java.util.*;
 
 @Data
 @Entity
-public class User implements Serializable, UserDetails {
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, updatable = false)
@@ -37,14 +37,6 @@ public class User implements Serializable, UserDetails {
     @JoinTable(name = "user_permission",
     joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns = @JoinColumn(name = "permission_id"))
-    private Set<Permission> permissions = new HashSet<>();
+    private List<Permission> permissions = new ArrayList<>();
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        for (Permission permission : permissions) {
-            authorities.add(new SimpleGrantedAuthority(permission.getPermissionName()));
-        }
-        return authorities;
-    }
 }

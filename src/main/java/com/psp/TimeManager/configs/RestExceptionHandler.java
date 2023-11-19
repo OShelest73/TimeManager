@@ -1,6 +1,6 @@
 package com.psp.TimeManager.configs;
 
-import com.psp.TimeManager.dto.ErrorDto;
+import com.psp.TimeManager.dtos.ErrorDto;
 import com.psp.TimeManager.exceptions.AppException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

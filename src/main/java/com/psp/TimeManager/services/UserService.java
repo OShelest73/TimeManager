@@ -1,8 +1,8 @@
 package com.psp.TimeManager.services;
 
-import com.psp.TimeManager.dto.CredentialsDto;
-import com.psp.TimeManager.dto.SignUpDto;
-import com.psp.TimeManager.dto.UserDto;
+import com.psp.TimeManager.dtos.CredentialsDto;
+import com.psp.TimeManager.dtos.SignUpDto;
+import com.psp.TimeManager.dtos.UserDto;
 import com.psp.TimeManager.exceptions.AppException;
 import com.psp.TimeManager.exceptions.UserNotFoundException;
 import com.psp.TimeManager.mappers.UserMapper;
@@ -10,17 +10,12 @@ import com.psp.TimeManager.models.User;
 import com.psp.TimeManager.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.management.relation.Role;
 import java.nio.CharBuffer;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -37,7 +32,7 @@ public class UserService {
     }
 
     public UserDto login(CredentialsDto credentialsDto){
-        User user = userRepository.findByLogin(credentialsDto.login())
+        User user = userRepository.findByEmail(credentialsDto.email())
                 .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
 
         if (passwordEncoder.matches(CharBuffer.wrap(credentialsDto.password()),
@@ -45,12 +40,12 @@ public class UserService {
         {
             return userMapper.toUserDto(user);
         }
-        throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
+        throw new AppException("Invalid login or password", HttpStatus.BAD_REQUEST);
     }
 
     public UserDto register(SignUpDto signUpDto)
     {
-        Optional<User> oUser = userRepository.findByLogin(signUpDto.login());
+        Optional<User> oUser = userRepository.findByEmail(signUpDto.email());
 
         if(oUser.isPresent())
         {
