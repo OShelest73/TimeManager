@@ -18,5 +18,5 @@ public class UserDto {
     private String fullName;
     private String email;
     private String token;
-    private List<Permission> permissions = new ArrayList<>();
+    private List<String> permissions = new ArrayList<>();
 }

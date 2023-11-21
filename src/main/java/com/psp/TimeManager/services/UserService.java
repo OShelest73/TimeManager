@@ -3,10 +3,12 @@ package com.psp.TimeManager.services;
 import com.psp.TimeManager.dtos.CredentialsDto;
 import com.psp.TimeManager.dtos.SignUpDto;
 import com.psp.TimeManager.dtos.UserDto;
+import com.psp.TimeManager.dtos.WorkspaceDto;
 import com.psp.TimeManager.exceptions.AppException;
 import com.psp.TimeManager.exceptions.UserNotFoundException;
 import com.psp.TimeManager.mappers.UserMapper;
 import com.psp.TimeManager.models.User;
+import com.psp.TimeManager.models.Workspace;
 import com.psp.TimeManager.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -61,11 +63,18 @@ public class UserService {
 
     public User addUser(User user)
     {
+        user.setPassword(passwordEncoder.encode(CharBuffer.wrap(user.getPassword())));
         return userRepository.save(user);
     }
 
     public List<User> findAllUsers(){
         return userRepository.findAll();
+    }
+
+    public User findUserByEmail(String email)
+    {
+        return userRepository.findByEmail(email).
+                orElseThrow(() -> new UserNotFoundException("User was not found"));
     }
 
     public User updateUser(User user)

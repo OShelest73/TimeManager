@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -18,11 +19,11 @@ public class Workspace implements Serializable {
     @Column(nullable = false)
     private String evaluationMethod;
     @ManyToOne
-    @JoinColumn(name = "User_id")
+    @JoinColumn(name = "User_email")
     private User author;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "workspace_user",
             joinColumns = @JoinColumn(name = "workspace_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private List<User> users;
+    private List<User> users = new ArrayList<>();
 }

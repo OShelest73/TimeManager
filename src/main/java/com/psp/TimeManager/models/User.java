@@ -30,10 +30,10 @@ public class User implements Serializable {
     @JoinColumn(name = "jobTitle_id")
     private JobTitle jobTitle;
 
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
     private List<Workspace> workspaces = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_permission",
     joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns = @JoinColumn(name = "permission_id"))

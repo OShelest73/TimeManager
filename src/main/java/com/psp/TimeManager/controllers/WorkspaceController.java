@@ -1,6 +1,8 @@
 package com.psp.TimeManager.controllers;
 
+import com.psp.TimeManager.dtos.WorkspaceDto;
 import com.psp.TimeManager.models.Workspace;
+import com.psp.TimeManager.services.UserService;
 import com.psp.TimeManager.services.WorkspaceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +21,9 @@ public class WorkspaceController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Workspace>> getAllWorkspaces()
+    public ResponseEntity<List<Workspace>> getUserWorkspaces()
     {
-        List<Workspace> workspaces = workspaceService.findAllUsers();
+        List<Workspace> workspaces = workspaceService.findUserWorkspaces();
         return new ResponseEntity<>(workspaces, HttpStatus.OK);
     }
 
@@ -33,8 +35,9 @@ public class WorkspaceController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Workspace> addWorkspace(@RequestBody Workspace workspace) {
-        Workspace workspaceForDB = workspaceService.addWorkspace(workspace);
+    public ResponseEntity<Workspace> addWorkspace(@RequestBody WorkspaceDto workspaceDto) {
+
+        Workspace workspaceForDB = workspaceService.addWorkspace(workspaceDto);
         return new ResponseEntity<>(workspaceForDB, HttpStatus.CREATED);
     }
 

@@ -3,6 +3,7 @@ package com.psp.TimeManager.configs;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.psp.TimeManager.dtos.UserDto;
 import com.psp.TimeManager.exceptions.AppException;
@@ -44,7 +45,7 @@ public class UserAuthProvider {
             .withIssuedAt(now)
             .withExpiresAt(validity)
             .withClaim("fullName", dto.getFullName())
-            .withClaim("permissions", dto.getPermissions())
+            .withClaim("usersPermissions", dto.getPermissions())
             .sign(Algorithm.HMAC256(secretKey));
     }
 
@@ -60,21 +61,24 @@ public class UserAuthProvider {
                 .email(decoded.getIssuer())
                 .fullName(decoded.getClaim("fullName").asString())
                 .build();
+        Claim claim = decoded.getClaim("usersPermissions");
 
-        /*String permissions = decoded.getClaim("permissions").asString();
-        permissions = permissions.replace("[", "").replace("]", "");
+        String permissions = claim.toString();
+
+        //String permissions = decoded.getClaim("usersPermissions").toString();
+        permissions = permissions.replace("\"", "").replace("[", "").replace("]", "");
         String[] roleNames = permissions.split(",");
 
-        List<Permission> bufPermissions = new ArrayList<>();
+        List<String> bufPermissions = new ArrayList<>();
         for (String aRoleName : roleNames) {
-            bufPermissions.add(new Permission(aRoleName));
+            bufPermissions.add(aRoleName);
         }
-        user.setPermissions(bufPermissions);*/
+        user.setPermissions(bufPermissions);
 
         return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
     }
 
-    public  Authentication validateTokenStrongly(String token){
+    public Authentication validateTokenStrongly(String token){
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
 
         JWTVerifier verifier = JWT.require(algorithm).build();
