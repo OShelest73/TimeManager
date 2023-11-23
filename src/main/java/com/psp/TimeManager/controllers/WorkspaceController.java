@@ -1,9 +1,11 @@
 package com.psp.TimeManager.controllers;
 
 import com.psp.TimeManager.dtos.WorkspaceDto;
+import com.psp.TimeManager.models.User;
 import com.psp.TimeManager.models.Workspace;
 import com.psp.TimeManager.services.UserService;
 import com.psp.TimeManager.services.WorkspaceService;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,10 +37,9 @@ public class WorkspaceController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Workspace> addWorkspace(@RequestBody WorkspaceDto workspaceDto) {
-
+    public ResponseEntity<WorkspaceDto> addWorkspace(@RequestBody WorkspaceDto workspaceDto) {
         Workspace workspaceForDB = workspaceService.addWorkspace(workspaceDto);
-        return new ResponseEntity<>(workspaceForDB, HttpStatus.CREATED);
+        return new ResponseEntity<>(workspaceDto, HttpStatus.CREATED);
     }
 
     @PutMapping("/update")
@@ -47,8 +48,12 @@ public class WorkspaceController {
         return new ResponseEntity<>(workspaceForDB, HttpStatus.OK);
     }
 
-    @PutMapping("/delete/{id}")
+    @Transactional
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteWorkspace(@PathVariable("id") int id) {
+        Workspace workspace = workspaceService.findWorkspaceById(id);
+        workspace.getUsers().clear();
+
         workspaceService.deleteWorkspace(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -30,7 +30,7 @@ public class User implements Serializable {
     @JoinColumn(name = "jobTitle_id")
     private JobTitle jobTitle;
 
-    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private List<Workspace> workspaces = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -39,4 +39,10 @@ public class User implements Serializable {
     inverseJoinColumns = @JoinColumn(name = "permission_id"))
     private List<Permission> permissions = new ArrayList<>();
 
+    @PreRemove
+    private void removeWorkspaceAssociations() {
+        for (Workspace workspace: this.workspaces) {
+            workspace.getUsers().remove(this);
+        }
+    }
 }

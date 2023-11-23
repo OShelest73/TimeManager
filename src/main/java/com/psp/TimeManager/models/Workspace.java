@@ -19,11 +19,16 @@ public class Workspace implements Serializable {
     @Column(nullable = false)
     private String evaluationMethod;
     @ManyToOne
-    @JoinColumn(name = "User_email")
+    @JoinColumn(name = "author_id")
     private User author;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(name = "workspace_user",
             joinColumns = @JoinColumn(name = "workspace_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> users = new ArrayList<>();
+
+    public void removeUser(User user){
+        this.users.remove(user);
+        user.getWorkspaces().remove(this);
+    }
 }
