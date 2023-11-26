@@ -21,7 +21,10 @@ public class Workspace implements Serializable {
     @ManyToOne
     @JoinColumn(name = "author_id")
     private User author;
-    @ManyToMany(cascade = CascadeType.MERGE)
+    @OneToMany
+    @JoinColumn(name = "workspace_id")
+    List<Task> workspaceTasks = new ArrayList<>();
+    @ManyToMany
     @JoinTable(name = "workspace_user",
             joinColumns = @JoinColumn(name = "workspace_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
