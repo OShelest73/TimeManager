@@ -67,29 +67,35 @@ public class Task {
             if (isAccepted == false)
             {
                 status = "Отклонено";
+                return;
             }
             if (isAccepted == true)
             {
                 status = "Завершено";
+                return;
             }
         }
-        if (appointedUsers.isEmpty() || appointedUsers == null)
+        if (appointedUsers == null || appointedUsers.size() == 0)
         {
             status = "Без исполнителя";
+            return;
         }
         LocalDateTime currentDate = LocalDateTime.now();
         if (currentDate.compareTo(finishDate) > 0)
         {
             status = "Просрочено";
             isExpired = true;
+            return;
         }
         if (currentDate.compareTo(startDate) >= 0)
         {
             status = "Выполняется";
+            return;
         }
-        if (currentDate.compareTo(startDate) >= 0)
+        if (currentDate.compareTo(startDate) < 0)
         {
             status = "Предстоит";
+            return;
         }
     }
 }

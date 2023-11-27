@@ -3,6 +3,7 @@ package com.psp.TimeManager.controllers;
 import com.psp.TimeManager.dtos.TaskPreviewDto;
 import com.psp.TimeManager.dtos.WorkspaceDto;
 import com.psp.TimeManager.mappers.TaskMapper;
+import com.psp.TimeManager.models.Task;
 import com.psp.TimeManager.models.Workspace;
 import com.psp.TimeManager.services.WorkspaceService;
 import jakarta.transaction.Transactional;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -42,8 +44,21 @@ public class WorkspaceController {
     public ResponseEntity<List<TaskPreviewDto>> getWorkspaceTasks(@PathVariable("id") int workspaceId)
     {
         Workspace workspace = workspaceService.findWorkspaceById(workspaceId);
-        List<TaskPreviewDto> tasks = taskMapper.toListTaskPreviewDto(workspace.getWorkspaceTasks());
-        return new ResponseEntity<>(tasks, HttpStatus.OK);
+        List<Task> tasks = workspace.getWorkspaceTasks();
+        List<TaskPreviewDto> previewTasks = new ArrayList<>();
+
+        for (Task task: tasks) {
+            TaskPreviewDto previewTask = new TaskPreviewDto(
+                    task.getId(),
+                    task.getTaskName(),
+                    task.getStartDate(),
+                    task.getFinishDate(),
+                    task.getStatus()
+            );
+            previewTasks.add(previewTask);
+        }
+
+        return new ResponseEntity<>(previewTasks, HttpStatus.OK);
     }
 
     @PostMapping("/add")
