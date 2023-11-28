@@ -13,8 +13,6 @@ public interface TaskMapper {
     TaskPreviewDto toTaskPreviewDto(Task task);
     List<TaskPreviewDto> toListTaskPreviewDto(List<Task> tasks);
 
-
-
     default int mapStoryPoint(StoryPoint storyPoint){
         int storyPointDto = 0;
         if (storyPoint != null)

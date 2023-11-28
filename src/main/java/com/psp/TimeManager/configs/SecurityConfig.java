@@ -26,7 +26,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((requests) ->
-                        requests.requestMatchers(HttpMethod.POST, "/login", "/register", "/user/add").permitAll() //TODO remove user/add
+                        requests.requestMatchers(HttpMethod.POST, "/login", "/register", "/user/add", "/jobTitle/add").permitAll() //TODO remove user/add
                                 .anyRequest().authenticated()
                 );
         return http.build();

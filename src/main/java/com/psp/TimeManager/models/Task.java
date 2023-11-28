@@ -51,14 +51,6 @@ public class Task {
     @JoinColumn(name = "story_point")
     private StoryPoint storyPoint;
 
-    public void setStoryPoint(@Nullable StoryPoint storyPoint) {
-        if(storyPoint == null)
-        {
-            storyPoint = null;
-        }
-        this.storyPoint = storyPoint;
-    }
-
     @PostLoad
     public void initializeStatus(){
         //По сути фильтр, порядок важен. Сначала есть ли вообще выполняющие, потом отрезаем по времени (просрочена->выполняется->предстоит)

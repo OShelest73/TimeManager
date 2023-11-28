@@ -16,8 +16,6 @@ public class Workspace implements Serializable {
     private int id;
     @Column(nullable = false)
     private String name;
-    @Column(nullable = false)
-    private String evaluationMethod;
     @ManyToOne
     @JoinColumn(name = "author_id")
     private User author;

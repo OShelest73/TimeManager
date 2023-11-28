@@ -33,12 +33,6 @@ public class User implements Serializable {
     @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private List<Workspace> workspaces = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_permission",
-    joinColumns = @JoinColumn(name = "user_id"),
-    inverseJoinColumns = @JoinColumn(name = "permission_id"))
-    private List<Permission> permissions = new ArrayList<>();
-
     @PreRemove
     private void removeWorkspaceAssociations() {
         for (Workspace workspace: this.workspaces) {

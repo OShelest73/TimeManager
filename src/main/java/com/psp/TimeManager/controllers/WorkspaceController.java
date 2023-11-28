@@ -1,9 +1,12 @@
 package com.psp.TimeManager.controllers;
 
 import com.psp.TimeManager.dtos.TaskPreviewDto;
+import com.psp.TimeManager.dtos.UserPreviewDto;
 import com.psp.TimeManager.dtos.WorkspaceDto;
 import com.psp.TimeManager.mappers.TaskMapper;
+import com.psp.TimeManager.mappers.UserMapper;
 import com.psp.TimeManager.models.Task;
+import com.psp.TimeManager.models.User;
 import com.psp.TimeManager.models.Workspace;
 import com.psp.TimeManager.services.WorkspaceService;
 import jakarta.transaction.Transactional;
@@ -19,11 +22,13 @@ import java.util.List;
 public class WorkspaceController {
     private final WorkspaceService workspaceService;
     private final TaskMapper taskMapper;
+    private final UserMapper userMapper;
 
-    public WorkspaceController(WorkspaceService workspaceService, TaskMapper taskMapper)
+    public WorkspaceController(WorkspaceService workspaceService, TaskMapper taskMapper, UserMapper userMapper)
     {
         this.workspaceService = workspaceService;
         this.taskMapper = taskMapper;
+        this.userMapper = userMapper;
     }
 
     @GetMapping("/all") //TODO в теории можно сносить
@@ -66,6 +71,24 @@ public class WorkspaceController {
         Workspace workspaceForDB = workspaceService.addWorkspace(workspaceDto);
         return new ResponseEntity<>(workspaceDto, HttpStatus.CREATED);
     }
+/*-------------------------------------------------------------------------------------------------------------------------------*/
+    @GetMapping("/users/{id}")
+    public ResponseEntity<List<UserPreviewDto>> getWorkspaceUsers(@PathVariable("id") int workspaceId) {
+        Workspace workspace = workspaceService.findWorkspaceById(workspaceId);
+        List<UserPreviewDto> users = userMapper.mapToPreview(workspace.getUsers());
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @PostMapping("/addUsers/{id}")
+    public ResponseEntity<?> addUsersToWorkspace(@PathVariable("id") int workspaceId, @RequestBody List<UserPreviewDto> users) {
+        Workspace workspace = workspaceService.findWorkspaceById(workspaceId);
+        List<User> usersToDb = workspace.getUsers();
+        List<User> usersToAdd = userMapper.mapFromPreview(users);
+        usersToDb.addAll(usersToAdd);
+        workspace.setUsers(usersToDb);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    /*-------------------------------------------------------------------------------------------------------------------------------*/
 
     @PutMapping("/update")
     public ResponseEntity<Workspace> updateWorkspace(@RequestBody Workspace workspace) {
