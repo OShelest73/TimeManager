@@ -18,5 +18,6 @@ public class UserDto {
     private String fullName;
     private String email;
     private String token;
+    private String jobTitle;
     private List<String> permissions = new ArrayList<>();
 }

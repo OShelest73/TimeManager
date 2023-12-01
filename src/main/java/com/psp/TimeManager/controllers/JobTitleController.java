@@ -1,27 +1,54 @@
 package com.psp.TimeManager.controllers;
 
+import com.psp.TimeManager.dtos.JobTitleDto;
+import com.psp.TimeManager.mappers.JobTitleMapper;
+import com.psp.TimeManager.mappers.UserMapper;
 import com.psp.TimeManager.models.JobTitle;
-import com.psp.TimeManager.models.User;
 import com.psp.TimeManager.services.JobTitleService;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/jobTitle")
 public class JobTitleController {
     private final JobTitleService jobTitleService;
+    private final JobTitleMapper jobTitleMapper;
 
-    public JobTitleController(JobTitleService jobTitleService) {
+    public JobTitleController(JobTitleService jobTitleService, JobTitleMapper jobTitleMapper) {
         this.jobTitleService = jobTitleService;
+        this.jobTitleMapper = jobTitleMapper;
     }
 
-    @PostMapping("/add")
+    @GetMapping("/all")
+    public ResponseEntity<List<String>> getAllJobTitles() {
+        List<JobTitle> jobTitles = jobTitleService.findAllJobTitles();
+        List<String> mappedJobTitles = jobTitleMapper.jobTitleToStringList(jobTitles);
+        return new ResponseEntity<>(mappedJobTitles, HttpStatus.OK);
+    }
+
+    @GetMapping("/allAsObj")
+    public ResponseEntity<List<JobTitleDto>> getJobTitlesAsObj() {
+        List<JobTitleDto> jobTitles = jobTitleMapper.jobTitleToSend(jobTitleService.findAllJobTitles());
+        return new ResponseEntity<>(jobTitles, HttpStatus.OK);
+    }
+
+    @PutMapping("/update")
     public ResponseEntity<JobTitle> addJobTitle(@RequestBody JobTitle jobTitle) {
-        JobTitle titleForDb = jobTitleService.addJobTitle(jobTitle);
-        return new ResponseEntity<>(titleForDb, HttpStatus.CREATED);
+        JobTitle titleForDb = jobTitleService.updateJobTitle(jobTitle);
+        return new ResponseEntity<>(titleForDb, HttpStatus.OK);
+    }
+
+    @Transactional
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteJobTitle(@PathVariable String id) {
+        JobTitle titleToDelete = jobTitleService.findTitleById(id);
+        titleToDelete.setPermissions(null);
+        jobTitleService.updateJobTitle(titleToDelete);
+        jobTitleService.deleteJobTitle(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

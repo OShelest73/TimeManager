@@ -1,14 +1,14 @@
 package com.psp.TimeManager.controllers;
 
 import com.psp.TimeManager.dtos.UserDto;
+import com.psp.TimeManager.dtos.UserPreviewDto;
 import com.psp.TimeManager.dtos.WorkspaceDto;
+import com.psp.TimeManager.mappers.UserMapper;
 import com.psp.TimeManager.mappers.WorkspaceMapper;
 import com.psp.TimeManager.models.User;
 import com.psp.TimeManager.services.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -20,17 +20,19 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final WorkspaceMapper workspaceMapper;
+    private final UserMapper userMapper;
 
-    public UserController(UserService userService, WorkspaceMapper workspaceMapper)
+    public UserController(UserService userService, WorkspaceMapper workspaceMapper, UserMapper userMapper)
     {
         this.userService = userService;
         this.workspaceMapper = workspaceMapper;
+        this.userMapper = userMapper;
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<User>> getAllUsers()
+    public ResponseEntity<List<UserPreviewDto>> getAllUsers()
     {
-        List<User> users = userService.findAllUsers();
+        List<UserPreviewDto> users = userMapper.mapToPreview(userService.findAllUsers());
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 

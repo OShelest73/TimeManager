@@ -3,9 +3,11 @@ package com.psp.TimeManager.mappers;
 import com.psp.TimeManager.dtos.SignUpDto;
 import com.psp.TimeManager.dtos.UserDto;
 import com.psp.TimeManager.dtos.UserPreviewDto;
+import com.psp.TimeManager.dtos.WorkspaceDto;
 import com.psp.TimeManager.models.JobTitle;
 import com.psp.TimeManager.models.Permission;
 import com.psp.TimeManager.models.User;
+import com.psp.TimeManager.models.Workspace;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -32,6 +34,11 @@ public interface UserMapper {
     {
         List<Permission> permissions = jobTitle.getPermissions();
         return permissions;
+    }
+
+    default JobTitle mapToJobTitle(String jobTitle)
+    {
+        return new JobTitle(jobTitle);
     }
 
     default String mapPermission(Permission permission){
