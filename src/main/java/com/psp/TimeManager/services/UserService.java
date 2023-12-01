@@ -63,6 +63,12 @@ public class UserService {
 
     public User addUser(User user)
     {
+        Optional<User> oUser = userRepository.findByEmail(user.getEmail());
+
+        if(oUser.isPresent())
+        {
+            throw new AppException("Login already exists", HttpStatus.BAD_REQUEST);
+        }
         user.setPassword(passwordEncoder.encode(CharBuffer.wrap(user.getPassword())));
         return userRepository.save(user);
     }

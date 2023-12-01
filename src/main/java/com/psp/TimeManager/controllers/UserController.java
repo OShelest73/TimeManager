@@ -53,9 +53,9 @@ public class UserController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<User> addUser(@RequestBody User user) {
-        User userForDB = userService.addUser(user);
-        return new ResponseEntity<>(userForDB, HttpStatus.CREATED);
+    public ResponseEntity<?> addUser(@RequestBody User user) {
+        userService.addUser(user);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping("/update")

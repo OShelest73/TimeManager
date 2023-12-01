@@ -4,6 +4,7 @@ import com.psp.TimeManager.dtos.JobTitleDto;
 import com.psp.TimeManager.mappers.JobTitleMapper;
 import com.psp.TimeManager.mappers.UserMapper;
 import com.psp.TimeManager.models.JobTitle;
+import com.psp.TimeManager.models.User;
 import com.psp.TimeManager.services.JobTitleService;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
@@ -36,8 +37,14 @@ public class JobTitleController {
         return new ResponseEntity<>(jobTitles, HttpStatus.OK);
     }
 
+    @PostMapping("/add")
+    public ResponseEntity<?> addJobTitle(@RequestBody JobTitle jobTitle) {
+        JobTitle titleForDB = jobTitleService.addJobTitle(jobTitle);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
     @PutMapping("/update")
-    public ResponseEntity<JobTitle> addJobTitle(@RequestBody JobTitle jobTitle) {
+    public ResponseEntity<JobTitle> updateJobTitle(@RequestBody JobTitle jobTitle) {
         JobTitle titleForDb = jobTitleService.updateJobTitle(jobTitle);
         return new ResponseEntity<>(titleForDb, HttpStatus.OK);
     }
