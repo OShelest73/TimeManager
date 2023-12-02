@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -45,20 +46,14 @@ public class UserController {
     @GetMapping("/invite/{id}")
     public ResponseEntity<List<UserPreviewDto>> getUsersToInvite(@PathVariable int id)
     {
+        Workspace workspace = workspaceService.findWorkspaceById(id);
+        List<User> exceptUsers = workspace.getUsers();
+
         List<User> allUsers = userService.findAllUsers();
+        List<User> result = new ArrayList<>(allUsers);
+        result.removeIf(exceptUsers::contains);
 
-        Iterator<User> iterator = allUsers.iterator();
-
-        while (iterator.hasNext()) {
-            User user = iterator.next();
-
-            if(user.getWorkspaces().stream().anyMatch(w -> w.getId() == id))
-            {
-                iterator.remove();
-                break;
-            }
-        }
-        List<UserPreviewDto> users = userMapper.mapToPreview(allUsers);
+        List<UserPreviewDto> users = userMapper.mapToPreview(result);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
@@ -101,7 +96,7 @@ public class UserController {
         return new ResponseEntity<>(userForDB, HttpStatus.OK);
     }
 
-    @PutMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable("id") int id) {
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.OK);

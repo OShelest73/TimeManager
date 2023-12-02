@@ -1,5 +1,6 @@
 package com.psp.TimeManager.controllers;
 
+import com.psp.TimeManager.dtos.InviteDto;
 import com.psp.TimeManager.dtos.TaskPreviewDto;
 import com.psp.TimeManager.dtos.UserPreviewDto;
 import com.psp.TimeManager.dtos.WorkspaceDto;
@@ -9,6 +10,7 @@ import com.psp.TimeManager.mappers.WorkspaceMapper;
 import com.psp.TimeManager.models.Task;
 import com.psp.TimeManager.models.User;
 import com.psp.TimeManager.models.Workspace;
+import com.psp.TimeManager.services.UserService;
 import com.psp.TimeManager.services.WorkspaceService;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
@@ -25,13 +27,15 @@ public class WorkspaceController {
     private final TaskMapper taskMapper;
     private final UserMapper userMapper;
     private final WorkspaceMapper workspaceMapper;
+    private final UserService userService;
 
-    public WorkspaceController(WorkspaceService workspaceService, TaskMapper taskMapper, UserMapper userMapper, WorkspaceMapper workspaceMapper)
+    public WorkspaceController(WorkspaceService workspaceService, TaskMapper taskMapper, UserMapper userMapper, WorkspaceMapper workspaceMapper, UserService userService)
     {
         this.workspaceService = workspaceService;
         this.taskMapper = taskMapper;
         this.userMapper = userMapper;
         this.workspaceMapper = workspaceMapper;
+        this.userService = userService;
     }
 
     @GetMapping("/all") //TODO в теории можно сносить
@@ -92,6 +96,18 @@ public class WorkspaceController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
     /*-------------------------------------------------------------------------------------------------------------------------------*/
+    @PostMapping("/user/remove")
+    public ResponseEntity<?> removeFromWorkspace(@RequestBody InviteDto inviteDto){
+        User user = userService.findUserById(inviteDto.userId());
+        Workspace workspace = workspaceService.findWorkspaceById(inviteDto.workspaceId());
+
+        List<User> workspaceUsers = workspace.getUsers();
+        workspaceUsers.remove(user);
+
+        workspace.setUsers(workspaceUsers);
+        workspaceService.updateWorkspace(workspace);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @PutMapping("/update")
     public ResponseEntity<Workspace> updateWorkspace(@RequestBody Workspace workspace) {
