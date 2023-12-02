@@ -5,26 +5,32 @@ import com.psp.TimeManager.dtos.UserPreviewDto;
 import com.psp.TimeManager.dtos.WorkspaceDto;
 import com.psp.TimeManager.mappers.UserMapper;
 import com.psp.TimeManager.mappers.WorkspaceMapper;
+import com.psp.TimeManager.dtos.InviteDto;
 import com.psp.TimeManager.models.User;
+import com.psp.TimeManager.models.Workspace;
 import com.psp.TimeManager.services.UserService;
+import com.psp.TimeManager.services.WorkspaceService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Iterator;
 import java.util.List;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
+    private final WorkspaceService workspaceService;
     private final WorkspaceMapper workspaceMapper;
     private final UserMapper userMapper;
 
-    public UserController(UserService userService, WorkspaceMapper workspaceMapper, UserMapper userMapper)
+    public UserController(UserService userService, WorkspaceService workspaceService, WorkspaceMapper workspaceMapper, UserMapper userMapper)
     {
         this.userService = userService;
+        this.workspaceService = workspaceService;
         this.workspaceMapper = workspaceMapper;
         this.userMapper = userMapper;
     }
@@ -33,6 +39,26 @@ public class UserController {
     public ResponseEntity<List<UserPreviewDto>> getAllUsers()
     {
         List<UserPreviewDto> users = userMapper.mapToPreview(userService.findAllUsers());
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @GetMapping("/invite/{id}")
+    public ResponseEntity<List<UserPreviewDto>> getUsersToInvite(@PathVariable int id)
+    {
+        List<User> allUsers = userService.findAllUsers();
+
+        Iterator<User> iterator = allUsers.iterator();
+
+        while (iterator.hasNext()) {
+            User user = iterator.next();
+
+            if(user.getWorkspaces().stream().anyMatch(w -> w.getId() == id))
+            {
+                iterator.remove();
+                break;
+            }
+        }
+        List<UserPreviewDto> users = userMapper.mapToPreview(allUsers);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
@@ -55,6 +81,17 @@ public class UserController {
     @PostMapping("/add")
     public ResponseEntity<?> addUser(@RequestBody User user) {
         userService.addUser(user);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PostMapping("/invite")
+    public ResponseEntity<?> addUser(@RequestBody InviteDto inviteDto) {
+        User user =  userService.findUserById(inviteDto.userId());
+        Workspace workspace = workspaceService.findWorkspaceById(inviteDto.workspaceId());
+        List<User> users = workspace.getUsers();
+        users.add(user);
+        workspace.setUsers(users);
+        workspaceService.updateWorkspace(workspace);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

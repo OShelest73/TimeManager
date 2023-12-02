@@ -1,12 +1,10 @@
 package com.psp.TimeManager.controllers;
 
 import com.psp.TimeManager.dtos.CreateTaskDto;
-import com.psp.TimeManager.dtos.TaskPreviewDto;
-import com.psp.TimeManager.dtos.WorkspaceDto;
+import com.psp.TimeManager.dtos.TaskDetailsDto;
+import com.psp.TimeManager.mappers.TaskMapper;
 import com.psp.TimeManager.models.Task;
-import com.psp.TimeManager.models.Workspace;
 import com.psp.TimeManager.services.TaskService;
-import com.psp.TimeManager.services.WorkspaceService;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +16,12 @@ import java.util.List;
 @RequestMapping("/task")
 public class TaskController {
     private final TaskService taskService;
+    private final TaskMapper taskMapper;
 
-    public TaskController(TaskService taskService)
+    public TaskController(TaskService taskService, TaskMapper taskMapper)
     {
         this.taskService = taskService;
+        this.taskMapper = taskMapper;
     }
 
     @GetMapping("/all") //TODO в теории можно сносить
@@ -32,9 +32,9 @@ public class TaskController {
     }
 
     @GetMapping("/find/{id}")
-    public ResponseEntity<Task> getTask(@PathVariable("id") int id)
+    public ResponseEntity<TaskDetailsDto> getTask(@PathVariable("id") int id)
     {
-        Task task = taskService.findTaskById(id);
+        TaskDetailsDto task = taskMapper.toTaskDetails(taskService.findTaskById(id));
         return new ResponseEntity<>(task, HttpStatus.OK);
     }
 
@@ -46,9 +46,9 @@ public class TaskController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Task> updateTask(@RequestBody Task task) {
+    public ResponseEntity<?> updateTask(@RequestBody Task task) {
         Task updateTask = taskService.updateTask(task);
-        return new ResponseEntity<>(updateTask, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Transactional

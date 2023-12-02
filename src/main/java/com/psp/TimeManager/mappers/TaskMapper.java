@@ -1,5 +1,6 @@
 package com.psp.TimeManager.mappers;
 
+import com.psp.TimeManager.dtos.TaskDetailsDto;
 import com.psp.TimeManager.dtos.TaskPreviewDto;
 import com.psp.TimeManager.dtos.WorkspaceDto;
 import com.psp.TimeManager.models.*;
@@ -12,6 +13,7 @@ import java.util.List;
 public interface TaskMapper {
     TaskPreviewDto toTaskPreviewDto(Task task);
     List<TaskPreviewDto> toListTaskPreviewDto(List<Task> tasks);
+    TaskDetailsDto toTaskDetails(Task task);
 
     default int mapStoryPoint(StoryPoint storyPoint){
         int storyPointDto = 0;

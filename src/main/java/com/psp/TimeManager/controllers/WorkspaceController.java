@@ -5,6 +5,7 @@ import com.psp.TimeManager.dtos.UserPreviewDto;
 import com.psp.TimeManager.dtos.WorkspaceDto;
 import com.psp.TimeManager.mappers.TaskMapper;
 import com.psp.TimeManager.mappers.UserMapper;
+import com.psp.TimeManager.mappers.WorkspaceMapper;
 import com.psp.TimeManager.models.Task;
 import com.psp.TimeManager.models.User;
 import com.psp.TimeManager.models.Workspace;
@@ -23,12 +24,14 @@ public class WorkspaceController {
     private final WorkspaceService workspaceService;
     private final TaskMapper taskMapper;
     private final UserMapper userMapper;
+    private final WorkspaceMapper workspaceMapper;
 
-    public WorkspaceController(WorkspaceService workspaceService, TaskMapper taskMapper, UserMapper userMapper)
+    public WorkspaceController(WorkspaceService workspaceService, TaskMapper taskMapper, UserMapper userMapper, WorkspaceMapper workspaceMapper)
     {
         this.workspaceService = workspaceService;
         this.taskMapper = taskMapper;
         this.userMapper = userMapper;
+        this.workspaceMapper = workspaceMapper;
     }
 
     @GetMapping("/all") //TODO в теории можно сносить
@@ -39,9 +42,9 @@ public class WorkspaceController {
     }
 
     @GetMapping("/find/{id}")
-    public ResponseEntity<Workspace> getWorkspace(@PathVariable("id") int id)
+    public ResponseEntity<WorkspaceDto> getWorkspace(@PathVariable("id") int id)
     {
-        Workspace workspace = workspaceService.findWorkspaceById(id);
+        WorkspaceDto workspace = workspaceMapper.toWorkspaceDto(workspaceService.findWorkspaceById(id));
         return new ResponseEntity<>(workspace, HttpStatus.OK);
     }
 

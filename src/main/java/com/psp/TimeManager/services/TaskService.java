@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,6 +62,10 @@ public class TaskService {
 
     public Task updateTask(Task task)
     {
+        UserDto userDetails = (UserDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<User> user = userRepository.findByEmail(userDetails.getEmail());
+        user.ifPresent(u -> task.setAuthor(u));
+
         return taskRepository.save(task);
     }
 

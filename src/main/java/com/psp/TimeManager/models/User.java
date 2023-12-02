@@ -39,4 +39,9 @@ public class User implements Serializable {
             workspace.getUsers().remove(this);
         }
     }
+
+    public void addWorkspace(Workspace workspace)
+    {
+        workspaces.add(workspace);
+    }
 }

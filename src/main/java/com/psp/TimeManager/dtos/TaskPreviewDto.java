@@ -4,6 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
 
-public record TaskPreviewDto(int id, String taskName, @JsonFormat(pattern="MM-dd-yyyy HH:mm")LocalDateTime startDate,
-                             @JsonFormat(pattern="MM-dd-yyyy HH:mm")LocalDateTime finishDate, String status) {
+public record TaskPreviewDto(int id, String taskName, @JsonFormat(pattern="dd-MM-yyyy HH:mm")LocalDateTime startDate,
+                             @JsonFormat(pattern="dd-MM-yyyy HH:mm")LocalDateTime finishDate, String status) {
 }
