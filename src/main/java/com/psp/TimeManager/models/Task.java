@@ -32,7 +32,6 @@ public class Task {
     @Column(nullable = false)
     private LocalDateTime finishDate;
 
-    //не мапится ибо всё равно на его состояния, чисто лейбел для пользователей и не более
     private String status;
 
     @ManyToOne

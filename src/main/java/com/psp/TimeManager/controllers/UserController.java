@@ -6,8 +6,10 @@ import com.psp.TimeManager.dtos.WorkspaceDto;
 import com.psp.TimeManager.mappers.UserMapper;
 import com.psp.TimeManager.mappers.WorkspaceMapper;
 import com.psp.TimeManager.dtos.InviteDto;
+import com.psp.TimeManager.models.Task;
 import com.psp.TimeManager.models.User;
 import com.psp.TimeManager.models.Workspace;
+import com.psp.TimeManager.services.TaskService;
 import com.psp.TimeManager.services.UserService;
 import com.psp.TimeManager.services.WorkspaceService;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,13 +31,15 @@ public class UserController {
     private final WorkspaceService workspaceService;
     private final WorkspaceMapper workspaceMapper;
     private final UserMapper userMapper;
+    private final TaskService taskService;
 
-    public UserController(UserService userService, WorkspaceService workspaceService, WorkspaceMapper workspaceMapper, UserMapper userMapper)
+    public UserController(UserService userService, WorkspaceService workspaceService, WorkspaceMapper workspaceMapper, UserMapper userMapper, TaskService taskService)
     {
         this.userService = userService;
         this.workspaceService = workspaceService;
         this.workspaceMapper = workspaceMapper;
         this.userMapper = userMapper;
+        this.taskService = taskService;
     }
 
     @GetMapping("/all")
@@ -55,6 +61,31 @@ public class UserController {
 
         List<UserPreviewDto> users = userMapper.mapToPreview(result);
         return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @GetMapping("/toAppoint/{workspaceId}/{taskId}")
+    public ResponseEntity<List<UserPreviewDto>> getUsersToAppoint(@PathVariable int workspaceId, @PathVariable int taskId)
+    {
+        Task task = taskService.findTaskById(taskId);
+        List<User> exceptUsers = task.getAppointedUsers();
+
+        Workspace workspace = workspaceService.findWorkspaceById(workspaceId);
+        List<User> result = new ArrayList<>(workspace.getUsers());
+        result.removeIf(exceptUsers::contains);
+
+        List<UserPreviewDto> users = userMapper.mapToPreview(result);
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    private boolean isDateOverlapping(LocalDateTime startDate1, LocalDateTime endDate1, LocalDateTime startDate2, LocalDateTime endDate2) {
+        if (startDate1.isBefore(endDate2) && endDate1.isAfter(startDate2) ||
+                startDate1.isBefore(endDate2) && endDate1.isEqual(endDate2) ||
+                startDate1.isEqual(startDate2) && endDate1.isAfter(startDate2) ||
+                startDate1.isEqual(startDate2) && endDate1.isEqual(endDate2)){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     @GetMapping("/workspaces")
