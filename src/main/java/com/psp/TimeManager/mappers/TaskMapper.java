@@ -15,6 +15,8 @@ public interface TaskMapper {
     List<TaskPreviewDto> toListTaskPreviewDto(List<Task> tasks);
     TaskDetailsDto toTaskDetails(Task task);
 
+    List<Integer> FromSpList(List<StoryPoint> storyPoints);
+
     default int mapStoryPoint(StoryPoint storyPoint){
         int storyPointDto = 0;
         if (storyPoint != null)

@@ -26,6 +26,8 @@ public class Task {
     private Boolean isAccepted = null;
     @Column
     private boolean isExpired = false;
+    @Column
+    private boolean isToCheck = false;
 
     @Column(nullable = false)
     private LocalDateTime startDate;
@@ -38,8 +40,12 @@ public class Task {
     @JoinColumn(name = "author_id")
     private User author;
 
-    @OneToMany
-    @JoinColumn(name = "task_id")
+    @ManyToMany
+    @JoinTable(
+        name = "task_user",
+        joinColumns = @JoinColumn(name = "task_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
     List<User> appointedUsers = new ArrayList<>();
 
     @ManyToOne
